@@ -1,9 +1,9 @@
 "use strict";
 
 // VARIABLES
-let todos = [];
 const todoAdd = document.querySelector('.todo_add_button');
 const todoInput = document.querySelector('.todo_input');
+const todoSearch = document.querySelector('.todo_search');
 const container = document.querySelector('.todo_container');
 const modal = document.querySelector('.modal');
 const modalCover = document.querySelector('.modal_cover');
@@ -11,18 +11,22 @@ const modalInput = document.querySelector('.modal_input');
 const modalCancel = document.querySelector('.modal_cancel');
 const modalApply = document.querySelector('.modal_apply');
 const saveButton = document.querySelector('.modal_save');
-const undoContainer = document.getElementById("undoContainer");
-const undoButton = document.getElementById("undoButton");
 const themeButton = document.querySelector('.todo_theme_button');
 const deleteAllToggle = document.getElementById('deleteAllToggle');
+const clockElement = document.querySelector('.clock');
 const warningModal = document.querySelector('.modal_warning');
+const modalContent = document.querySelector('.modal_warning_content');
 const warningOkButton = document.querySelector('.modal_warning_ok');
+const emptyBoard = document.querySelector('.empty_board');
 
-
+let todos = [];
 let editingTodoId = null;
-let lastDeletedTask = null;
-let undoTimer;
+let countdownInterval = null;
+let countdown = 5;
+let deletingTodo = null;
 
+
+// MODAL MAIN
 modal.style.cssText = `
     display: block;
     visibility: hidden;
@@ -39,6 +43,7 @@ function closeModal() {
 function openModal() {
     modal.style.visibility = 'visible';
     modal.style.opacity = '1';
+    modalApply.focus();
 }
 
 
@@ -81,53 +86,82 @@ function addTodo(text) {
         text,
         completed: false
     };
+    if (todos.length === 0 && deleteAllToggle.checked === true) {
+        deleteAllToggle.checked = false;
+    }
     todos.push(todo);
     localStorage.setItem("todos", JSON.stringify(todos));
     addTodoToDOM(todo);
     updateTaskStats();
 }
 
-function deleteTodo(id) {
-    lastDeletedTask = todos.find(todo => todo.id === id);
-    todos = todos.filter(todo => todo.id !== id);
-    localStorage.setItem("todos", JSON.stringify(todos));
-    render();
-    updateTaskStats();
-    showUndoButton();
-}
 
-function undoDelete() {
-    if (!lastDeletedTask) return;
-    todos.push(lastDeletedTask);
-    localStorage.setItem("todos", JSON.stringify(todos));
-    render();
-    updateTaskStats();
-    hideUndoButton();
-}
 
-function showUndoButton() {
-    undoContainer.classList.remove("hidden");
-    let counter = 5;
-    document.getElementById("undoCounter").innerText = counter;
 
-    undoTimer = setInterval(() => {
-        counter--;
-        document.getElementById("undoCounter").innerText = counter;
-        if (counter <= 0) hideUndoButton();
+// DELETION MODAL
+function showDeleteModal(todo) {
+    if (deletingTodo) return;
+    deletingTodo = todo;
+    countdown = 5;
+
+    modalContent.innerHTML = `
+        <p>Вы действительно хотите удалить задачу "${todo.text}"?</p>
+        <p id="timer">Удаление через ${countdown} секунд(ы)</p>
+        <p></p>
+        <button id="confirmDelete">Да</button>
+        <button id="cancelDelete">Нет</button>
+    `;
+    warningModal.style.display = "flex";
+
+    countdownInterval = setInterval(() => {
+        countdown--;
+        document.getElementById("timer").textContent = `Удаление через ${countdown} секунд(ы)`;
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            deleteTodoImmediate(deletingTodo);
+        }
     }, 1000);
+
+    document.getElementById("confirmDelete").onclick = () => {
+        clearInterval(countdownInterval);
+        deleteTodoImmediate(deletingTodo);
+    };
+    document.getElementById("cancelDelete").onclick = () => {
+        cancelDelete();
+    };
 }
 
-function hideUndoButton() {
-    undoContainer.classList.add("hidden");
-    clearInterval(undoTimer);
-    lastDeletedTask = null;
+
+function deleteTodoImmediate(todo) {
+    todos = todos.filter(t => t.id !== todo.id);
+
+    if (todos.length === 0 && deleteAllToggle.checked === false) {
+        deleteAllToggle.checked = true;
+    }
+    localStorage.setItem("todos", JSON.stringify(todos));
+    render();
+    updateTaskStats();
+    hideDeleteModal();
 }
+
+function cancelDelete() {
+    clearInterval(countdownInterval);
+    deletingTodo = null;
+    hideDeleteModal();
+}
+
+function hideDeleteModal() {
+    warningModal.style.display = "none";
+    deletingTodo = null;
+}
+
 
 // STATS
 function updateTaskStats() {
-    const totalTasksElem = document.getElementById("total-tasks");
-    const activeTasksElem = document.getElementById("active-tasks");
-    const completedTasksElem = document.getElementById("completed-tasks");
+    const totalTasksElem = document.getElementById("total_tasks");
+    const activeTasksElem = document.getElementById("active_tasks");
+    const completedTasksElem = document.getElementById("completed_tasks");
+    const taskStatsElem = document.querySelector(".task_stats");
 
     const totalTasks = todos.length;
     const completedTasks = todos.filter(todo => todo.completed).length;
@@ -136,7 +170,16 @@ function updateTaskStats() {
     totalTasksElem.textContent = totalTasks;
     activeTasksElem.textContent = activeTasks;
     completedTasksElem.textContent = completedTasks;
+
+    if (totalTasks > 0) {
+        taskStatsElem.classList.add("visible");
+        emptyBoard.style.display = "none";
+    } else {
+        taskStatsElem.classList.remove("visible");
+        emptyBoard.style.display = "flex";
+    }
 }
+
 
 // RENDERING
 function render() {
@@ -152,6 +195,7 @@ window.onload = () => {
     render();
     updateTaskStats();
 };
+
 
 // FILTER TASKS
 function filterTasks(status) {
@@ -170,38 +214,46 @@ function filterTasks(status) {
     });
 }
 
+
 // THEME
 function loadTheme() {
-    const theme = localStorage.getItem("theme");
-    if (theme === "dark") {
-        document.body.classList.add("dark-theme");
-    }
+    const theme = localStorage.getItem("theme") || "light";
+    document.body.classList.toggle("dark-theme", theme === "dark");
+
+    updateThemeButtonIcon(theme);
 }
 
 function toggleTheme() {
-    document.body.classList.toggle('dark-theme');
-    const theme = document.body.classList.contains("dark-theme") ? "dark" : "light";
+    const isDarkTheme = document.body.classList.toggle("dark-theme");
+    const theme = isDarkTheme ? "dark" : "light";
     localStorage.setItem("theme", theme);
+
+    updateThemeButtonIcon(theme);
 }
 
-window.addEventListener('load', loadTheme);
+function updateThemeButtonIcon(theme) {
+    if (theme === "dark") {
+        themeButton.querySelector("img").src = "./img/svg/sun.svg";
+        themeButton.querySelector("img").alt = "Switch to light theme";
+    } else {
+        themeButton.querySelector("img").src = "./img/svg/moon.svg";
+        themeButton.querySelector("img").alt = "Switch to dark theme";
+    }
+}
 
-themeButton.addEventListener('click', toggleTheme);
-
+window.addEventListener("load", loadTheme);
+themeButton.addEventListener("click", toggleTheme);
 
 
 // EVENT LISTENERS
 todoAdd.addEventListener('click', openModal);
-
 modalCover.addEventListener('click', (event) => {
     if (event.target === modalCover) {
         closeModal();
     }
 });
 
-
 modalCancel.addEventListener('click', closeModal);
-
 modalApply.addEventListener('click', () => {
     const text = modalInput.value.trim();
     if (text.length < 3) {
@@ -215,8 +267,12 @@ modalApply.addEventListener('click', () => {
 
 modalInput.addEventListener('keydown', (event) => {
     if (event.key === "Enter") {
+        event.preventDefault();
+        // event.stopPropagation();
         const text = modalInput.value.trim();
+
         if (text.length < 3) {
+            // event.preventDefault();
             showWarningModal();
         } else {
             addTodo(text);
@@ -228,9 +284,12 @@ modalInput.addEventListener('keydown', (event) => {
 
 container.addEventListener('click', (event) => {
     const target = event.target;
+
     if (target.classList.contains('img_trash')) {
         const todoId = target.dataset.id;
-        deleteTodo(todoId);
+        const todo = todos.find(t => t.id === todoId);
+        if (todo) showDeleteModal(todo);
+
     } else if (target.classList.contains('custom_checkbox')) {
         const todoId = target.dataset.id;
         const todo = todos.find(t => t.id === todoId);
@@ -239,24 +298,33 @@ container.addEventListener('click', (event) => {
             localStorage.setItem("todos", JSON.stringify(todos));
             updateTaskStats();
             const taskElement = target.closest('.todo_task');
-            if (todo.completed) {
-                taskElement.classList.add('completed');
-            } else {
-                taskElement.classList.remove('completed');
-            }
+            taskElement.classList.toggle('completed', todo.completed);
         }
+
     } else if (target.classList.contains('img_pen')) {
         const todoId = target.closest('.todo_task').dataset.id;
         const todo = todos.find(t => t.id === todoId);
-        if (todo) {
-            openModal();
-            modalInput.value = todo.text;
-            editingTodoId = todoId;
-        }
+        if (todo) openEditModal(todo);
     }
 });
 
-undoButton.addEventListener("click", undoDelete);
+
+//DELETE ALL
+deleteAllToggle.addEventListener('change', () => {
+    if (todos.length === 0) {
+        openModal();
+    } else {
+        const confirmation = confirm("Вы действительно хотите удалить все задачи?");
+        if (confirmation) {
+            todos = [];
+            localStorage.setItem("todos", JSON.stringify(todos));
+            render();
+            updateTaskStats();
+        } else {
+            deleteAllToggle.checked = false;
+        }
+    }
+});
 
 
 // SAVE BUTTON
@@ -281,15 +349,6 @@ saveButton.addEventListener('click', () => {
     }
 });
 
-container.addEventListener('click', (event) => {
-    if (event.target.classList.contains('img_pen')) {
-        const todoId = event.target.closest('.todo_task').querySelector('.custom_checkbox').dataset.id;
-        const todo = todos.find(t => t.id === todoId);
-        if (todo) openEditModal(todo);
-    }
-});
-
-
 
 // FILTER
 document.getElementById("task_status").addEventListener("change", () => {
@@ -301,26 +360,37 @@ document.getElementById("task_status").addEventListener("change", () => {
 // WARNING
 function showWarningModal() {
     warningModal.style.display = 'flex';
-    document.addEventListener('keydown', closeWarningOnEnter);
+    warningOkButton.focus();
 }
 
 function hideWarningModal() {
     warningModal.style.display = 'none';
-    document.removeEventListener('keydown', closeWarningOnEnter);
-}
-
-function closeWarningOnEnter(event) {
-    if (event.key === "Enter") {
-        hideWarningModal();
-    }
 }
 
 warningOkButton.addEventListener('click', hideWarningModal);
 
 
-// CLOCK
-const clockElement = document.querySelector('.clock');
+// SEARCH
+function searchTodo() {
+    const query = todoInput.value.toLowerCase().trim();
+    const tasks = document.querySelectorAll('.todo_task');
 
+    tasks.forEach(task => {
+        const taskText = task.querySelector('.todo_left span').textContent.toLowerCase();
+        if (taskText.includes(query)) {
+            task.style.display = 'flex';
+        } else {
+            task.style.display = 'none';
+        }
+
+        todoInput.value = '';}
+    );
+}
+
+todoSearch.addEventListener('click', searchTodo);
+
+
+// CLOCK
 function updateClock() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
@@ -328,6 +398,6 @@ function updateClock() {
     const seconds = String(now.getSeconds()).padStart(2, '0');
     clockElement.textContent = `${hours}:${minutes}:${seconds}`;
 }
-
 setInterval(updateClock, 1000);
 updateClock();
+

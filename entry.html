@@ -13,10 +13,10 @@
 </head>
 <body>
 
-    <div class="task-stats">
-        <p>Общее количество задач: <span id="total-tasks">0</span></p>
-        <p>Активные задачи: <span id="active-tasks">0</span></p>
-        <p>Выполненные задачи (всего): <span id="completed-tasks">0</span></p>
+    <div class="task_stats">
+        <p>Общее количество задач: <span id="total_tasks">0</span></p>
+        <p>Активные задачи: <span id="active_tasks">0</span></p>
+        <p>Выполненные задачи (всего): <span id="completed_tasks">0</span></p>
     </div>
 
     <div class="modal">
@@ -73,24 +73,16 @@
             </button>
         </div>
 
-        <div class="todo_container">
-
             <div class="empty_board">
                 <img class="img_detective" src="./img/svg/detective.svg" alt="">
                 <div class="empty">Empty...</div>
             </div>
 
-        </div>
-        </div>
-
-    <div id="undoContainer" class="undo-container hidden">
-        <button id="undoButton" class="undo-button">
-            <span id="undoCounter">3</span> UNDO ↩
-        </button>
+            <div class="todo_container"></div>
     </div>
 
-    <div class="toggle-container">
-        <label for="deleteAllToggle" class="toggle-label">Удалить все задачи</label>
+    <div class="toggle_container">
+        <label for="deleteAllToggle" class="toggle_label">Удалить все задачи</label>
         <div class="switch">
             <input type="checkbox" id="deleteAllToggle">
             <label for="deleteAllToggle" class="toggle"></label>
