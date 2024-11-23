@@ -7,89 +7,91 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ToDo list</title>
     <link rel="stylesheet" href="./css/style.css">
-    <link rel="icon" href="img/png/frame.png" type="image/x-icon">
+    <link rel="icon" href="img/png/page-icon-frame.png" type="image/x-icon">
     <script src="./js/script.js" defer></script>
-
 </head>
 <body>
 
-    <div class="task_stats">
-        <p>Общее количество задач: <span id="total_tasks">0</span></p>
-        <p>Активные задачи: <span id="active_tasks">0</span></p>
-        <p>Выполненные задачи (всего): <span id="completed_tasks">0</span></p>
-    </div>
+<div class="task-stats">
+    <p>Общее количество задач: <span class="total-tasks">0</span></p>
+    <p>Активные задачи: <span class="active-tasks">0</span></p>
+    <p>Выполненные задачи (всего): <span class="completed-tasks">0</span></p>
+</div>
 
-    <div class="modal">
-        <div class="modal_cover">
-            <div class="modal_main">
-                <h2 class="modal_title">NEW NOTE</h2>
-                <div class="modal_container">
-                    <input class="modal_input" id="modal_input" type="text" placeholder="Input your note...">
-                    <label for="modal_input"></label>
-                    <button class="modal_cancel">CANCEL</button>
-                    <button class="modal_save" id="modal_save_button" disabled>SAVE</button>
-                    <button class="modal_apply">APPLY</button>
-                </div>
+<div class="modal">
+    <div class="modal-overlay">
+        <div class="modal-main">
+            <h2 class="modal-title">NEW NOTE</h2>
+            <div class="modal-container">
+                <input class="modal-input" type="text" placeholder="Input your note...">
+                <button class="modal-cancel">CANCEL</button>
+                <button class="modal-apply">APPLY</button>
             </div>
-    </div>
-    </div>
-
-    <div class="modal_warning">
-        <div class="modal_warning_content">
-            <p>Вы ввели меньше 3 символов</p>
-            <button class="modal_warning_ok">OK</button>
         </div>
     </div>
+</div>
 
-    <div class="app">
+<div class="modal-warning">
+    <div class="modal-warning-content">
+        <p>Вы ввели меньше 3 символов</p>
+        <button class="modal-warning-ok">OK</button>
+    </div>
+</div>
 
-        <header>TODO LIST</header>
+<div class="delete-all-modal modal-warning">
+    <div class="modal-warning-content">
+        <p>Вы действительно хотите удалить все задачи?</p>
+        <div class="modal-buttons">
+            <button class="delete-all-confirm modal-apply">Да</button>
+            <button class="delete-all-cancel modal-cancel">Нет</button>
+        </div>
+    </div>
+</div>
 
-        <button class="todo_add_button">
-            <img class="svg_plus" src="./img/svg/plus.svg" alt="plus">
-        </button>
+<div class="todo-list-container">
 
+    <header>TODO LIST</header>
 
-        <div class="todo_content">
-            <div class="todo_new">
-                <input class="todo_input" id="todo_input" type="text" placeholder="Search note...">
-                <label for="todo_input"></label>
-                <button class="todo_search">
-                        <img class="img_loupe" src="./img/svg/loupe.svg" alt="loupe_icon">
-                </button>
-            </div>
+    <button class="todo-add-button">
+        <img class="svg-plus" src="img/svg/plus.svg" alt="plus">
+    </button>
 
-            <div class="todo_sort">
-                <select class="todo_select" name="status" id="task_status">
-                    <option value="">All</option>
-                    <option value="complete">Complete</option>
-                    <option value="incomplete">Incomplete</option>
-                </select>
-                <label for="task_status"></label>
-            </div>
-
-            <button class="todo_theme_button">
-                <img src="./img/svg/moon.svg" alt="theme_icon">
+    <div class="todo-content">
+        <div class="todo-new">
+            <input class="todo-input" type="text" placeholder="Search note..." disabled>
+            <button class="todo-search">
+                <img class="img-loupe" src="./img/svg/loupe.svg" alt="loupe-icon">
             </button>
         </div>
 
-            <div class="empty_board">
-                <img class="img_detective" src="./img/svg/detective.svg" alt="">
-                <div class="empty">Empty...</div>
+        <select class="todo-select" name="status">
+            <option value="">All</option>
+            <option value="complete">Complete</option>
+            <option value="incomplete">Incomplete</option>
+        </select>
+
+        <button class="todo-theme-button">
+            <img src="./img/svg/moon.svg" alt="theme-icon">
+        </button>
+
+        <div class="toggle-container">
+            <div class="switch">
+                <input type="checkbox" class="delete-all-toggle" id="deleteAllToggle">
+                <label for="deleteAllToggle" class="toggle"></label>
+                <span class="toggle-text">Clear list</span>
             </div>
-
-            <div class="todo_container"></div>
-    </div>
-
-    <div class="toggle_container">
-        <label for="deleteAllToggle" class="toggle_label">Удалить все задачи</label>
-        <div class="switch">
-            <input type="checkbox" id="deleteAllToggle">
-            <label for="deleteAllToggle" class="toggle"></label>
         </div>
     </div>
 
-    <div class="clock"></div>
+    <div class="empty-board">
+        <img class="img-detective" src="img/svg/detective.svg" alt="">
+        <div class="empty">Empty...</div>
+    </div>
+
+    <div class="todo-container"></div>
+</div>
+
+<div class="clock"></div>
 
 </body>
 </html>
