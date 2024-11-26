@@ -12,6 +12,7 @@
 </head>
 <body>
 
+
 <div class="task-stats">
     <p>Общее количество задач: <span class="total-tasks">0</span></p>
     <p>Активные задачи: <span class="active-tasks">0</span></p>
@@ -31,14 +32,14 @@
     </div>
 </div>
 
-<div class="modal-warning">
+<div class="modal-action-warning">
     <div class="modal-warning-content">
         <p>Вы ввели меньше 3 символов</p>
         <button class="modal-warning-ok">OK</button>
     </div>
 </div>
 
-<div class="delete-all-modal modal-warning">
+<div class="delete-all-modal modal-action-warning">
     <div class="modal-warning-content">
         <p>Вы действительно хотите удалить все задачи?</p>
         <div class="modal-buttons">
@@ -58,7 +59,7 @@
 
     <div class="todo-content">
         <div class="todo-new">
-            <input class="todo-input" type="text" placeholder="Search note..." disabled>
+            <input class="search-input" type="text" placeholder="Search note..." disabled>
             <button class="todo-search">
                 <img class="img-loupe" src="./img/svg/loupe.svg" alt="loupe-icon">
             </button>
@@ -83,9 +84,9 @@
         </div>
     </div>
 
-    <div class="empty-board">
+    <div class="todo-empty-container">
         <img class="img-detective" src="img/svg/detective.svg" alt="">
-        <div class="empty">Empty...</div>
+        <div class="empty-text">Empty...</div>
     </div>
 
     <div class="todo-container"></div>
@@ -95,4 +96,3 @@
 
 </body>
 </html>
-

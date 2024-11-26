@@ -6,6 +6,12 @@
     --second-family: "Inter", sans-serif;
     --third-family: "Raleway", sans-serif;
     --font3: "Inria Serif", sans-serif;
+
+    --bg-color: var(--white);
+    --text-color: var(--black);
+    --input-bg-color: var(--white);
+    --border-color: var(--purple);
+    --modal-bg-color: var(--white);
 }
 
 * {
@@ -16,14 +22,22 @@
 
 body {
     width: 100%;
-    background-color: #f7f7f7;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+body.dark-theme {
+    --bg-color: var(--black);
+    --text-color: var(--white);
+    --input-bg-color: var(--black);
+    --border-color: var(--white);
+    --modal-bg-color: var(--black);
 }
 
 /*STATS*/
 .task-stats {
     width: 240px;
     padding: 10px;
-    border: 1px solid var(--purple);
     border-radius: 5px;
     margin-bottom: 20px;
 
@@ -31,9 +45,8 @@ body {
     transition: transform 0.8s ease;
     opacity: 0;
 
-    background-color: rgba(237, 236, 243, 0.76);
     color: var(--purple);
-    box-shadow: 0 0 4px 0 var(--purple);
+    border: 1px solid var(--purple);
 
     font-family: var(--second-family), sans-serif;
     font-weight: 500;
@@ -87,12 +100,14 @@ body {
     border-radius: 16px;
     width: 500px;
     height: 289px;
-    background: var(--white);
+
+    background: var(--modal-bg-color);
+    border: 1px solid var(--border-color);
 }
 
 .modal-title {
     margin: 6px 0 12px 0;
-    color: var(--black);
+    color: var(--text-color);
     text-align: center;
     font-family: var(--font-family), sans-serif;
     font-weight: 500;
@@ -102,15 +117,19 @@ body {
 }
 
 .modal-input {
-    border: 1px solid var(--purple);
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 8px 16px;
     width: 440px;
     height: 38px;
+
     font-family: var(--second-family), sans-serif;
     font-weight: 500;
     font-size: 16px;
     line-height: 100%;
+
+    color: var(--text-color);
+    background-color: var(--input-bg-color);
 }
 
 .modal-input::placeholder {
@@ -131,7 +150,7 @@ body {
 
     font-weight: 500;
     color: var(--purple);
-    background: var(--white);
+    background: var(--bg-color);
 
     position: relative;
     top: 115px;
@@ -168,7 +187,7 @@ header {
     font-family: var(--font-family), sans-serif;
     font-weight: 500;
     font-size: 26px;
-    color: var(--black);
+    color: var(--text-color);
 
     text-align: center;
     margin: 40px auto 30px;
@@ -178,7 +197,6 @@ header {
     max-width: 750px;
     height: 575px;
     margin: 0 auto;
-
     position: relative;
 }
 
@@ -203,14 +221,14 @@ header {
     box-shadow: 0 0 4px 0 var(--purple);
 }
 
-.todo-input {
+.search-input {
     font-family: var(--second-family), sans-serif;
     font-weight: 500;
     font-size: 16px;
     line-height: 100%;
     width: 96%;
 
-    background-color: #f7f7f7;
+    background-color: var(--input-bg-color);
     color: var(--purple);
 
     border: 0;
@@ -219,14 +237,13 @@ header {
     cursor: pointer;
 }
 
-.todo-input::placeholder {
+.search-input::placeholder {
     color: #C3C1E5;
 }
 
 .todo-search {
     border: 0;
-    background-color: #f7f7f7;
-
+    background-color: var(--input-bg-color);
     cursor: pointer;
 }
 
@@ -245,7 +262,7 @@ header {
     width: 120px;
     height: 38px;
 
-    background: var(--purple) url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right 10px center;
+    background: var(--purple) url('../img/png/down-arrow-icon.png') no-repeat right 12px center;
     background-size: 12px;
     box-shadow: 0 0 4px 0 var(--purple);
 
@@ -256,7 +273,7 @@ header {
 
 .todo-select:hover {
     background-color: #534CC2;
-    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+    background-image: url('../img/png/down-arrow-icon.png');
     background-size: 12px;
 }
 
@@ -304,6 +321,7 @@ header {
     font-size: 10px;
     font-family: var(--font-family), sans-serif;
     color: var(--purple);
+
     margin-top: 25px;
     margin-left: 3px;
 }
@@ -315,6 +333,7 @@ header {
     left: 0;
     right: 0;
     bottom: 0;
+
     background-color: rgba(108, 99, 255, 0.8);
     border-radius: 34px;
     transition: 0.4s;
@@ -328,6 +347,7 @@ header {
     width: 17px;
     left: 4px;
     bottom: 4px;
+
     background-color: white;
     border-radius: 50%;
     transition: 0.4s;
@@ -361,13 +381,11 @@ input:checked + .toggle::before {
 .todo-task {
     width: 100%;
     height: 26px;
-
     margin-bottom: 17px;
-
     display: flex;
 }
 
-.empty-board {
+.todo-empty-container {
     display: block;
 }
 
@@ -378,19 +396,19 @@ input:checked + .toggle::before {
     transform: translate(-50%);
 }
 
-.empty {
+.empty-text {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%);
 }
 
-.todo-left {
+.todo-status-and-text {
     width: 100%;
     font-family: var(--font-family), sans-serif;
     font-size: 20px;
     line-height: 100%;
-    color: var(--black);
+    color: var(--text-color);
 
     display: flex;
     align-items: center;
@@ -409,6 +427,7 @@ input:checked + .toggle::before {
     align-items: center;
     user-select: none;
 }
+
 .custom-checkbox+label::before {
     content: '';
     display: inline-block;
@@ -428,15 +447,16 @@ input:checked + .toggle::before {
 .custom-checkbox:checked+label::before {
     border-color: var(--purple);
     background-color: var(--purple);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+    background-image: url('../img/png/down-arrow-icon.png');
 }
 
-.todo-task.completed .todo-left span {
-    color: rgba(37, 37, 37, 0.5);
+.todo-task.completed .todo-status-and-text span {
+    color: var(--text-color);
+    opacity: 0.5;
     text-decoration: line-through;
 }
 
-.todo-right {
+.todo-buttons {
     width: 75px;
     gap: 8px;
     display: flex;
@@ -445,7 +465,7 @@ input:checked + .toggle::before {
 
 .todo-right-button {
     border: none;
-    background-color: #f7f7f7;
+    background-color: var(--bg-color);
     cursor: pointer;
 }
 
@@ -506,11 +526,10 @@ input:checked + .toggle::before {
     position: fixed;
     bottom: 40px;
     right: 46%;
-
 }
 
 /*WARNING*/
-.modal-warning {
+.modal-action-warning {
     display: none;
     position: fixed;
     top: 0;
@@ -524,7 +543,8 @@ input:checked + .toggle::before {
 }
 
 .modal-warning-content {
-    background: var(--white);
+    background: var(--modal-bg-color);
+    color: var(--text-color);
     opacity: 0.8;
     padding: 20px;
     border-radius: 5px;
@@ -537,7 +557,7 @@ input:checked + .toggle::before {
     line-height: 1;
 }
 
-.modal-warning button {
+.modal-action-warning button {
     font-family: inherit;
     font-size: 14px;
     padding: 10px 20px;
@@ -572,78 +592,4 @@ input:checked + .toggle::before {
 
 .confirm-delete:hover, .delete-all-confirm:hover {
     background-color: #e53935;
-}
-
-/*DARK THEME*/
-body.dark-theme {
-    background-color: #252525;
-    color: var(--white);
-}
-
-body.dark-theme .task-stats {
-    background-color: var(--black);
-}
-body.dark-theme .todo-input {
-    background-color: #252525;
-    color: var(--white);
-}
-
-body.dark-theme .todo-new {
-    border-color: var(--purple);
-    background-color: #252525;
-}
-
-body.dark-theme .todo-left {
-    color: var(--white);
-}
-
-body.dark-theme .todo-search {
-    background-color: var(--black);
-}
-
-body.dark-theme .todo-right-button {
-    background-color: var(--black);
-}
-
-body.dark-theme .todo-task.completed .todo-left span {
-    color: rgb(255, 255, 255, 0.4);
-    text-decoration: line-through;
-}
-
-body.dark-theme .modal-title {
-    color: var(--white);
-}
-
-body.dark-theme .modal-main {
-    background: var(--black);
-    border: 1px solid var(--white);
-}
-
-body.dark-theme .modal-input {
-    background-color: var(--black);
-    color: var(--white);
-    border: 1px solid var(--white)
-}
-
-body.dark-theme .modal-input::placeholder {
-    color: #C3C1E5;
-}
-
-body.dark-theme .modal-cancel {
-    background: var(--black);
-    color: var(--purple);
-    border: 1px solid var(--white)
-}
-
-body.dark-theme header {
-    color: var(--white);
-}
-
-body.dark-theme .modal-warning-content {
-    background: var(--black);
-    opacity: 0.8;
-
-    border: 2px solid var(--purple);
-
-    color: var(--white);
 }

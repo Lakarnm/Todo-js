@@ -1,8 +1,8 @@
 "use strict";
 
 // VARIABLES
-const todoAdd = document.querySelector('.todo-add-button');
-const todoInput = document.querySelector('.todo-input');
+const todoAddButton = document.querySelector('.todo-add-button');
+const searchInput = document.querySelector('.search-input');
 const todoSearch = document.querySelector('.todo-search');
 const container = document.querySelector('.todo-container');
 const modal = document.querySelector('.modal');
@@ -13,10 +13,10 @@ const modalApply = document.querySelector('.modal-apply');
 const themeButton = document.querySelector('.todo-theme-button');
 const deleteAllToggle = document.querySelector('.delete-all-toggle');
 const clockElement = document.querySelector('.clock');
-const warningModal = document.querySelector('.modal-warning');
+const warningActionModal = document.querySelector('.modal-action-warning');
 const modalContent = document.querySelector('.modal-warning-content');
 const warningOkButton = document.querySelector('.modal-warning-ok');
-const emptyBoard = document.querySelector('.empty-board');
+const todoEmptyContainer = document.querySelector('.todo-empty-container');
 
 let todos = [];
 let editingTodoId = null;
@@ -72,8 +72,8 @@ function addTodoToDOM(todo) {
     todoTask.className = `todo-task ${todo.completed ? 'completed' : ''}`;
     todoTask.dataset.id = todo.id;
 
-    const todoLeft = document.createElement('div');
-    todoLeft.className = 'todo-left';
+    const todoStatusAndText = document.createElement('div');
+    todoStatusAndText.className = 'todo-status-and-text';
 
     const taskCheckbox = document.createElement('div');
     taskCheckbox.className = 'task-checkbox';
@@ -94,11 +94,11 @@ function addTodoToDOM(todo) {
 
     taskCheckbox.appendChild(checkbox);
     taskCheckbox.appendChild(label);
-    todoLeft.appendChild(taskCheckbox);
-    todoLeft.appendChild(taskText);
+    todoStatusAndText.appendChild(taskCheckbox);
+    todoStatusAndText.appendChild(taskText);
 
-    const todoRight = document.createElement('div');
-    todoRight.className = 'todo-right';
+    const todoButtons = document.createElement('div');
+    todoButtons.className = 'todo-buttons';
 
     const editButton = document.createElement('button');
     editButton.className = 'todo-right-button';
@@ -117,11 +117,11 @@ function addTodoToDOM(todo) {
     deleteIcon.dataset.id = todo.id;
     deleteButton.appendChild(deleteIcon);
 
-    todoRight.appendChild(editButton);
-    todoRight.appendChild(deleteButton);
+    todoButtons.appendChild(editButton);
+    todoButtons.appendChild(deleteButton);
 
-    todoTask.appendChild(todoLeft);
-    todoTask.appendChild(todoRight);
+    todoTask.appendChild(todoStatusAndText);
+    todoTask.appendChild(todoButtons);
 
     container.appendChild(todoTask);
 }
@@ -155,7 +155,7 @@ function showDeleteModal(todo) {
         <button class="confirm-delete modal-apply">Да</button>
         <button class="cancel-delete modal-cancel">Нет</button>
     `;
-    warningModal.style.display = "flex";
+    warningActionModal.style.display = "flex";
 
     countdownInterval = setInterval(() => {
         countdown--;
@@ -194,7 +194,7 @@ function cancelDelete() {
 }
 
 function hideDeleteModal() {
-    warningModal.style.display = "none";
+    warningActionModal.style.display = "none";
     deletingTodo = null;
 }
 
@@ -215,14 +215,14 @@ function updateTaskStats() {
 
     if (totalTasks > 0) {
         taskStatsElem.classList.add("visible");
-        emptyBoard.style.display = "none";
-        todoInput.disabled = false;
-        todoInput.style.cursor = "pointer";
+        todoEmptyContainer.style.display = "none";
+        searchInput.disabled = false;
+        searchInput.style.cursor = "pointer";
     } else {
         taskStatsElem.classList.remove("visible");
-        emptyBoard.style.display = "flex";
-        todoInput.disabled = true;
-        todoInput.style.cursor = "not-allowed";
+        todoEmptyContainer.style.display = "flex";
+        searchInput.disabled = true;
+        searchInput.style.cursor = "not-allowed";
     }
 }
 
@@ -279,29 +279,29 @@ function updateThemeButtonIcon(theme) {
 }
 
 // WARNING MODAL
-function showWarningModal() {
-    warningModal.style.display = 'flex';
+function showWarningActionModal() {
+    warningActionModal.style.display = 'flex';
     warningOkButton.focus();
 }
 
-function hideWarningModal() {
-    warningModal.style.display = 'none';
+function hideWarningActionModal() {
+    warningActionModal.style.display = 'none';
 }
 
 // SEARCH INPUT
 function searchTodo() {
-    const query = todoInput.value.toLowerCase().trim();
+    const query = searchInput.value.toLowerCase().trim();
     const tasks = document.querySelectorAll('.todo-task');
 
     tasks.forEach(task => {
-        const taskText = task.querySelector('.todo-left span').textContent.toLowerCase();
+        const taskText = task.querySelector('.todo-status-and-text span').textContent.toLowerCase();
         if (taskText.includes(query)) {
             task.style.display = 'flex';
         } else {
             task.style.display = 'none';
         }
 
-        todoInput.value = '';}
+        searchInput.value = '';}
     );
 }
 
@@ -318,7 +318,7 @@ updateClock();
 
 // ATTACH EVENTS
 function attachEvents() {
-    todoAdd.addEventListener('click', openModal);
+    todoAddButton.addEventListener('click', openModal);
 
     modalOverlay.addEventListener('click', (event) => {
         if (event.target === modalOverlay) {
@@ -363,7 +363,7 @@ function attachEvents() {
             const text = modalInput.value.trim();
 
             if (text.length < 3) {
-                showWarningModal();
+                showWarningActionModal();
             } else {
                 if (isEditing && editingTodoId) {
                     const todo = todos.find(t => t.id === editingTodoId);
@@ -448,7 +448,7 @@ function attachEvents() {
 
     todoSearch.addEventListener('click', searchTodo);
 
-    warningOkButton.addEventListener('click', hideWarningModal);
+    warningOkButton.addEventListener('click', hideWarningActionModal);
 
     window.addEventListener("load", loadTheme);
     themeButton.addEventListener("click", toggleTheme);
